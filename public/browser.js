@@ -1,12 +1,58 @@
+function itemTemplate(item) {
+    return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+          <span class="item-text">${item.text}</span>
+          <div>
+            <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+            <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm" >Delete</button>
+          </div>
+        </li>`
+}
+//        create feature/////////////////
+let createField = document.getElementById("create-field") //this is referencing to the create-field from the html ...smart..
+
+document.getElementById("create-form").addEventListener("submit", function (e) {
+    e.preventDefault()
+    axios.post("/create-item", {
+        text: createField.value
+    }).then(function (response) {
+        //create the html for a new item
+        document.getElementById("item-list").insertAdjacentHTML("beforeend", itemTemplate(response.data))
+        createField.value = "" //to erase the inputted text from the inputfield
+        createField.focus() //to refocus onto the inputfield
+    }).catch(function () {
+        console.log("try again later.")
+    })
+})
+//      delete Feature///////////////
 document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('edit-me')) {
-        let userInput = prompt('enter your modified task')
-        axios.post("/update-item", {
-            text: userInput
-        }).then(function () {
-            //do some in the next video
-        }).catch(function () {
-            console.log('try again later.')
-        })
+    if (e.target.classList.contains('delete-me')) {
+        if (confirm('Do you want to erase this item forever?')) {
+            axios.post("/delete-item", {
+
+                id: e.target.getAttribute('data-id')
+            }).then(function () {
+                e.target.parentElement.parentElement.remove()
+            }).catch(function () {
+                console.log('try again later.')
+            })
+        }
+    }
+
+
+    //      ///////////////////update Feature
+    // document.addEventListener('click', function (e) { this line is referenced on the fnction block above, is repeated here (thats why it was repting the actn 2)
+    if (e.target.classList.contains('edit-me')) { //let userInput line of code trgts the extng txt/item lvng in the <span> n chngs it
+        let userInput = prompt('enter your modified task', e.target.parentElement.parentElement.querySelector('.item-text').innerHTML)
+        if (userInput) {
+            axios.post("/update-item", {
+                text: userInput,
+                id: e.target.getAttribute('data-id')
+            }).then(function () {
+                e.target.parentElement.parentElement.querySelector('.item-text').innerHTML = userInput
+            }).catch(function () {
+                console.log('try again later.')
+            })
+        }
     }
 })
+// })
