@@ -6,7 +6,15 @@ function itemTemplate(item) {
             <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm" >Delete</button>
           </div>
         </li>`
+
 }
+
+//        //initial page load-render//////////
+let ourHTML = items.map(function (item) {
+    return itemTemplate(item)
+}).join('')
+document.getElementById('item-list').insertAdjacentHTML('beforeend', ourHTML)
+
 //        create feature/////////////////
 let createField = document.getElementById("create-field") //this is referencing to the create-field from the html ...smart..
 
